@@ -68,6 +68,11 @@ app.get("/api/health", (req, res) => {
   res.json({ message: "Server is running!", timestamp: new Date() });
 });
 
+// ✅ Test route untuk verifikasi cepat
+app.get("/api/test", (req, res) => {
+  res.json({ message: "✅ Backend KaiRooms aktif dan berjalan!" });
+});
+
 // ✅ Export untuk Vercel
 module.exports = app;
 module.exports.handler = serverless(app);
