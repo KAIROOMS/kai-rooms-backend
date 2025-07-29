@@ -29,7 +29,7 @@ const app = express();
 
 
 app.use(cors({
-  origin: "https://kai-rooms.vercel.app" || "http://localhost:3000",
+  origin: ["https://kai-rooms.vercel.app", "http://localhost:3000"],
   credentials: true,
 }));
 app.use(bodyParser.json());
