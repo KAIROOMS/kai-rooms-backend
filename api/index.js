@@ -13,7 +13,6 @@ require("dotenv").config();
 
 
 
-
 console.log("🔍 Checking environment variables:");
 console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID ? "✅ Set" : "❌ Not set");
 console.log("GOOGLE_CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET ? "✅ Set" : "❌ Not set");
@@ -22,6 +21,8 @@ console.log("SESSION_SECRET:", process.env.SESSION_SECRET ? "✅ Set" : "❌ Not
 console.log("✅ Loaded .env file from:", path.join(__dirname, "..", ".env"));
 console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
 
+
+//update
 
 
 const app = express();
