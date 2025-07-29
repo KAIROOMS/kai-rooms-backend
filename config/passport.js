@@ -9,20 +9,27 @@ if (!process.env.GOOGLE_CLIENT_ID) {
 }
 
 if (!process.env.GOOGLE_CLIENT_SECRET) {
-  console.error(
-    "❌ GOOGLE_CLIENT_SECRET tidak ditemukan di environment variables"
-  );
+  console.error("❌ GOOGLE_CLIENT_SECRET tidak ditemukan di environment variables");
   process.exit(1);
 }
 
 console.log("✅ Google OAuth credentials loaded successfully");
+
+// ✅ Tentukan callbackURL berdasarkan environment
+const getCallbackURL = () => {
+  if (process.env.NODE_ENV === 'production') {
+    // Ganti dengan domain Vercel Anda yang sebenarnya
+    return `${process.env.API_URL}/api/auth/google/callback`;
+  }
+  return "http://localhost:5000/api/auth/google/callback";
+};
 
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/api/auth/google/callback",
+      callbackURL: getCallbackURL(),
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -70,15 +77,11 @@ passport.use(
   )
 );
 
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id); // ✅ Ambil lengkap dari DB
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
+passport.serializeUser((user, done) => {
+  done(null, user._id);
 });
 
+// ✅ Hapus duplikasi - hanya satu deserializeUser
 passport.deserializeUser(async (id, done) => {
   try {
     console.log("🔄 Deserialize user ID:", id);

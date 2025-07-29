@@ -4,8 +4,8 @@ const passport = require("../config/passport");
 const { generateToken } = require("../middleware/auth");
 require("dotenv").config();
 
-const apiUrl= process.env.API_URL || "http://localhost:5000"
-const frontendUrl= process.env.FRONTEND_URL || "http://localhost:3000"
+const apiUrl = process.env.API_URL || "http://localhost:5000";
+const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
 
 // Rute untuk memulai OAuth Google
 router.get(
@@ -13,23 +13,39 @@ router.get(
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-// Callback setelah Google OAuthz
+// Callback setelah Google OAuth dengan error handling yang lebih baik
 router.get(
   "/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: `${frontendUrl}/auth/error`, 
-    session: false,
-  }),
+  (req, res, next) => {
+    passport.authenticate("google", (err, user, info) => {
+      if (err) {
+        console.error("❌ OAuth Error:", err);
+        console.error("Error details:", {
+          message: err.message,
+          stack: err.stack,
+          data: err.data
+        });
+        return res.redirect(`${frontendUrl}/auth/error?message=OAuth%20Authentication%20Failed`);
+      }
+      
+      if (!user) {
+        console.error("❌ No user returned from OAuth");
+        return res.redirect(`${frontendUrl}/auth/error?message=Authentication%20Failed`);
+      }
+      
+      req.user = user;
+      next();
+    })(req, res, next);
+  },
   async (req, res) => {
     try {
       console.log("🔄 Google callback berhasil, user:", req.user.email);
-      console.log('Client ID:', process.env.GOOGLE_CLIENT_ID);
-      console.log('Client Secret:', process.env.GOOGLE_CLIENT_SECRET ? 'Set' : 'Not set');
+      
       // 💥 Cek apakah akun sudah disetujui oleh admin, KECUALI kalau dia admin
       const adminEmails = ["sbilla241@gmail.com", "kairoomsmeet@gmail.com"];
       if (!req.user.isApproved && !adminEmails.includes(req.user.email)) {
         console.warn("❌ Akun belum disetujui admin:", req.user.email);
-        return res.redirect(frontendUrl+"/auth/error?message=Akun%20belum%20disetujui%20oleh%20admin.");
+        return res.redirect(`${frontendUrl}/auth/error?message=Akun%20belum%20disetujui%20oleh%20admin.`);
       }
 
       // ✅ Generate JWT token
@@ -55,11 +71,10 @@ router.get(
       res.redirect(redirectUrl);
     } catch (error) {
       console.error("❌ Error generating token:", error);
-      res.redirect(frontendUrl+"/auth/error");
+      res.redirect(`${frontendUrl}/auth/error?message=Token%20Generation%20Failed`);
     }
   }
 );
-
 
 // Rute untuk logout
 router.post("/logout", (req, res) => {
