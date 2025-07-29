@@ -11,5 +11,8 @@
       "src": "/(.*)",
       "dest": "api/index.js"
     }
+  ],
+  "externalDependencies": [
+    "multer-storage-cloudinary"
   ]
 }
