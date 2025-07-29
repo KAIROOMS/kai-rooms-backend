@@ -1,5 +1,3 @@
-require("multer-storage-cloudinary");
-
 const serverless = require("serverless-http");
 const express = require("express");
 const mongoose = require("mongoose");
@@ -14,7 +12,7 @@ require("dotenv").config();
 
 
 
-// Debug env check
+
 console.log("🔍 Checking environment variables:");
 console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID ? "✅ Set" : "❌ Not set");
 console.log("GOOGLE_CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET ? "✅ Set" : "❌ Not set");
@@ -27,14 +25,14 @@ console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
 
 const app = express();
 
-// ✅ CORS untuk Vercel (bisa sesuaikan)
+
 app.use(cors({
   origin: process.env.FRONTEND_URL || "http://localhost:3000",
   credentials: true,
 }));
 app.use(bodyParser.json());
 
-// ✅ Session
+
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -45,11 +43,11 @@ app.use(session({
   },
 }));
 
-// ✅ Passport
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-// ✅ MongoDB connection
+
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
@@ -58,24 +56,23 @@ mongoose
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// ✅ Routes
 app.use("/api/booking", require("../routes/booking"));
 app.use("/api/users", require("../routes/users"));
 app.use("/api/auth", require("../routes/auth"));
 
-// ✅ Static file serving (Cloudinary lebih disarankan, tapi ini tetap bisa)
+
 app.use("/uploads", express.static("uploads"));
 
-// ✅ Health check
+
 app.get("/api/health", (req, res) => {
   res.json({ message: "Server is running!", timestamp: new Date() });
 });
 
-// ✅ Test route untuk verifikasi cepat
+
 app.get("/api/test", (req, res) => {
   res.json({ message: "✅ Backend KaiRooms aktif dan berjalan!" });
 });
 
-// ✅ Export untuk Vercel
+
 module.exports = app;
 module.exports.handler = serverless(app);
