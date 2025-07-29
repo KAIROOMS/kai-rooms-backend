@@ -1,7 +1,7 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/users");
-
+require("dotenv").config();
 // ✅ Validasi environment variables
 if (!process.env.GOOGLE_CLIENT_ID) {
   console.error("❌ GOOGLE_CLIENT_ID tidak ditemukan di environment variables");
