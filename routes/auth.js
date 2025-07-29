@@ -70,8 +70,9 @@ if(process.env.NODE_ENV === "production") {
         JSON.stringify(userInfo)
       )}`;
 }else {
-  redirectUrl = `http://localhost:3000/`  
-
+  redirectUrl = `http://localhost:3000/auth/success?token=${token}&user=${encodeURIComponent(
+        JSON.stringify(userInfo)
+      )}`  
 }
       // const redirectUrl = `${frontendUrl}/auth/success?token=${token}&user=${encodeURIComponent(
       //   JSON.stringify(userInfo)
