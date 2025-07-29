@@ -5,7 +5,7 @@ const { generateToken } = require("../middleware/auth");
 require("dotenv").config();
 
 const apiUrl = process.env.API_URL || "http://localhost:5000";
-const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+const frontendUrl = process.env.FRONTEND_URL || "kai-rooms.vercel.app";
 
 // Rute untuk memulai OAuth Google
 router.get(
