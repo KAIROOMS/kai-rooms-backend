@@ -2,7 +2,10 @@ const express = require("express");
 const router = express.Router();
 const passport = require("../config/passport");
 const { generateToken } = require("../middleware/auth");
+require("dotenv").config();
 
+const apiUrl= process.env.API_URL || "http://localhost:5000"
+const frontendUrl= process.env.FRONTEND_URL || "http://localhost:3000"
 // Rute untuk memulai OAuth Google
 router.get(
   "/google",
@@ -13,7 +16,7 @@ router.get(
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "http://localhost:3000/auth/error",
+    failureRedirect: `${frontendUrl}/auth/error`, 
     session: false,
   }),
   async (req, res) => {
@@ -24,7 +27,7 @@ router.get(
       const adminEmails = ["sbilla241@gmail.com", "kairoomsmeet@gmail.com"];
       if (!req.user.isApproved && !adminEmails.includes(req.user.email)) {
         console.warn("❌ Akun belum disetujui admin:", req.user.email);
-        return res.redirect("http://localhost:3000/auth/error?message=Akun%20belum%20disetujui%20oleh%20admin.");
+        return res.redirect(frontendUrl+"/auth/error?message=Akun%20belum%20disetujui%20oleh%20admin.");
       }
 
       // ✅ Generate JWT token
@@ -42,7 +45,7 @@ router.get(
         departemen: req.user.departemen,
       };
 
-      const redirectUrl = `http://localhost:3000/auth/success?token=${token}&user=${encodeURIComponent(
+      const redirectUrl = `${frontendUrl}/auth/success?token=${token}&user=${encodeURIComponent(
         JSON.stringify(userInfo)
       )}`;
 
@@ -50,7 +53,7 @@ router.get(
       res.redirect(redirectUrl);
     } catch (error) {
       console.error("❌ Error generating token:", error);
-      res.redirect("http://localhost:3000/auth/error");
+      res.redirect(frontendUrl+"/auth/error");
     }
   }
 );
