@@ -63,9 +63,19 @@ router.get(
         departemen: req.user.departemen,
       };
 
-      const redirectUrl = `${frontendUrl}/auth/success?token=${token}&user=${encodeURIComponent(
+      let redirectUrl;
+
+if(process.env.NODE_ENV === "production") {
+  redirectUrl = `https://kai-rooms.vercel.app/auth/success?token=${token}&user=${encodeURIComponent(
         JSON.stringify(userInfo)
       )}`;
+}else {
+  redirectUrl = `http://localhost:3000/`  
+
+}
+      // const redirectUrl = `${frontendUrl}/auth/success?token=${token}&user=${encodeURIComponent(
+      //   JSON.stringify(userInfo)
+      // )}`;
 
       console.log("🔄 Redirecting to:", redirectUrl);
       res.redirect(redirectUrl);
