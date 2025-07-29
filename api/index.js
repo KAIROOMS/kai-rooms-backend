@@ -3,7 +3,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const session = require("express-session");
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const passport = require("../config/passport");
 
 const path = require("path");
@@ -37,10 +38,9 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: {
-    secure: false,
-    maxAge: 24 * 60 * 60 * 1000,
-  },
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+  })
 }));
 
 
